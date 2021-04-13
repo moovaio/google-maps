@@ -336,4 +336,10 @@ class WebService{
     {
         Parameters::resetParams();
     }
+
+    public function setKey($key)
+    {
+        $this->key = $key;
+        return $this;
+    }
 }

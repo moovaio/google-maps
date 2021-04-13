@@ -91,6 +91,7 @@ Open configuration file **`config/googlemaps.php`** and add your service key
 ```
 
 If you like to use different keys for any of the services, you can overwrite master API Key by specifying it in the `service` array for selected web service.
+Alternatively, you can set an API KEY with the method `setKey`.
 
 
 Usage
@@ -160,6 +161,7 @@ Available methods
 * [`getEndpoint()`](#getEndpoint)
 * [`setParamByKey( $key, $value)`](#setParamByKey)
 * [`setParam( $parameters)`](#setParam)
+* [`setKey( $key)`](#setKey)
 * [`get()`](#get)
 * [`get( $key )`](#get)
 * [`containsLocation( $lat, $lng )`](#containsLocation)
@@ -244,6 +246,20 @@ $response = \GoogleMaps::load('geocoding')
                         'country'               => 'US',
                          ]
                      ]) // return $this
+...
+```
+
+---
+
+<a name="setKey"></a>
+**`setKey( $key)`** - set a specific service key
+
+Accepts a string as service key
+Returns reference to it's self.
+
+```php
+$response = \GoogleMaps::load('geocoding')
+                ->setKey("MY_SERVICE_KEY") // return $this
 ...
 ```
 

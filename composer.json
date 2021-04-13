@@ -1,7 +1,7 @@
 {
-	"name": "alexpechkarev/google-maps",
+	"name": "moova/google-maps",
 	"description": "Collection of Google Maps API Web Services for Laravel",
-	"version": "8.0",
+	"version": "1.0",
 	"keywords": [
 		"google maps api",
 		"google maps api for laravel",
@@ -16,14 +16,7 @@
 		"time zone api",
 		"places api web service"
 	],
-	"homepage": "https://alexpechkarev.github.io/google-maps/",
 	"license": "MIT",
-	"authors": [
-		{
-			"name": "Alexander Pechkarev",
-			"email": "alexpechkarev@gmail.com"
-		}
-	],
 	"minimum-stability": "stable",
 	"require": {
 		"illuminate/support": "^8.0",
@@ -42,15 +35,12 @@
 		}
 	},
 	"extra": {
-		"branch-alias": {
-			"dev-master": "8.0-dev"
-		},
 		"laravel": {
 		    "providers": [
-				"GoogleMaps\\ServiceProvider\\GoogleMapsServiceProvider"
+					"GoogleMaps\\ServiceProvider\\GoogleMapsServiceProvider"
 		    ],
 		    "aliases": {
-				"GoogleMaps": "GoogleMaps\\Facade\\GoogleMapsFacade"
+					"GoogleMaps": "GoogleMaps\\Facade\\GoogleMapsFacade"
 		    }
 		}
 	}

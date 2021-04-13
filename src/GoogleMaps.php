@@ -5,8 +5,8 @@
  *
  * @author Alexander Pechkarev <alexpechkarev@gmail.com>
  */
-class GoogleMaps extends WebService{
-
+class GoogleMaps extends WebService
+{
     /**
      * Array of classes to handle web service request
      * By default WebService class will be used
@@ -23,15 +23,11 @@ class GoogleMaps extends WebService{
      * @return \GoogleMaps\WebService
      * @throws \ErrorException
      */
-    public function load($service) {
-
-        // is overwrite class specified
-        $class = array_key_exists($service, $this->webServices)
-            ? new $this->webServices[$service]
-            : $this;
-
+    public function load($service)
+    {
+        // Is overwrite class specified
+        $class = array_key_exists($service, $this->webServices) ? new $this->webServices[$service] : $this;
         $class->build($service);
-
         return $class;
     }
 }
