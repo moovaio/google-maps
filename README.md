@@ -161,7 +161,7 @@ Available methods
 * [`getEndpoint()`](#getEndpoint)
 * [`setParamByKey( $key, $value)`](#setParamByKey)
 * [`setParam( $parameters)`](#setParam)
-* [`setKey( $key)`](#setKey)
+* [`setKey( $key )`](#setKey)
 * [`get()`](#get)
 * [`get( $key )`](#get)
 * [`containsLocation( $lat, $lng )`](#containsLocation)
@@ -252,7 +252,7 @@ $response = \GoogleMaps::load('geocoding')
 ---
 
 <a name="setKey"></a>
-**`setKey( $key)`** - set a specific service key
+**`setKey( $key )`** - set a specific service key
 
 Accepts a string as service key
 Returns reference to it's self.
