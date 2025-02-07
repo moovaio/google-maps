@@ -20,8 +20,6 @@ class WebService{
     */
     protected $endpoint;
 
-
-
     /*
     |--------------------------------------------------------------------------
     | Web Service
@@ -32,7 +30,6 @@ class WebService{
     */
     protected $service;
 
-
     /*
     |--------------------------------------------------------------------------
     | API Key
@@ -42,7 +39,6 @@ class WebService{
     |
     */
     protected $key;
-
 
     /*
     |--------------------------------------------------------------------------
@@ -64,15 +60,17 @@ class WebService{
     */
     protected $verifySSL;
 
+    protected $version = null;
+    protected $headers = ['Content-Type: application/json'];
+
     /**
      * Setting endpoint
      * @param string $key
      * @return $this
      */
-    public function setEndpoint( $key = 'json' ){
-
+    public function setEndpoint($key = 'json')
+    {
         $this->endpoint = Config::get("googlemaps.endpoint.{$key}", 'json?');
-
         return $this;
     }
 
@@ -80,8 +78,8 @@ class WebService{
      * Getting endpoint
      * @return string
      */
-    public function getEndpoint( ){
-
+    public function getEndpoint()
+    {
         return $this->endpoint;
     }
 
@@ -91,9 +89,9 @@ class WebService{
      * @param string $value
      * @return $this
      */
-    public function setParamByKey($key, $value){
-
-         if( array_key_exists( $key, Arr::dot( $this->service['param'] ) ) ){
+    public function setParamByKey($key, $value)
+    {
+         if (array_key_exists($key, Arr::dot($this->service['param']))) {
              Arr::set($this->service['param'], $key, $value);
          }
 
@@ -105,7 +103,8 @@ class WebService{
      * @param string $key
      * @return string|null
      */
-    public function getParamByKey($key){
+    public function getParamByKey($key)
+    {
         return Arr::get($this->service['param'], $key, null);
     }
 
@@ -114,10 +113,9 @@ class WebService{
      * @param array $param
      * @return $this
      */
-    public function setParam( $param ){
-
-        $this->service['param'] = array_merge( $this->service['param'], $param );
-
+    public function setParam($param)
+    {
+        $this->service['param'] = array_merge($this->service['param'], $param);
         return $this;
     }
 
@@ -125,7 +123,8 @@ class WebService{
      * Return parameters array
      * @return array
      */
-    public function getParam(){
+    public function getParam()
+    {
         return $this->service['param'];
     }
 
@@ -136,11 +135,12 @@ class WebService{
      * @return string|array
      * @throws \ErrorException
      */
-    public function get( $needle = false ){
-
-        return empty( $needle )
-                ? $this->getResponse()
-                : $this->getResponseByKey( $needle );
+    public function get($needle = false)
+    {
+        if (empty($needle)) {
+            return $this->getResponse();
+        }
+        return $this->getResponseByKey($needle);
     }
 
     /**
@@ -150,10 +150,12 @@ class WebService{
      * @return array
      * @throws \ErrorException
      */
-    public function getResponseByKey( $needle = false){
-
+    public function getResponseByKey($needle = false)
+    {
         // set response to json
-        $this->setEndpoint('json');
+        if (is_null($this->version)) {
+            $this->setEndpoint('json');
+        }
 
         // set default key parameter
         $needle = empty( $needle )
@@ -191,10 +193,12 @@ class WebService{
      * @return mixed
      * @throws \ErrorException
      */
-    public function getStatus(){
-
+    public function getStatus()
+    {
         // set response to json
-        $this->setEndpoint('json');
+        if (is_null($this->version)) {
+            $this->setEndpoint('json');
+        }
 
         // get response
         $obj = json_decode( $this->get(), true);
@@ -215,30 +219,30 @@ class WebService{
      * @param $service
      * @throws \ErrorException
      */
-    protected function build( $service ){
+    protected function build($service)
+    {
+        $this->validateConfig($service);
 
-            $this->validateConfig( $service );
-
-            // set default endpoint
+        // set default endpoint
+        if (is_null($this->version)) {
             $this->setEndpoint();
+        }
 
-            // set web service parameters
-            $this->service = Config::get('googlemaps.service.'.$service);
+        // set web service parameters
+        $this->service = Config::get('googlemaps.service.' . $service);
 
-            // is service key set, use it, otherwise use default key
-            $this->key = empty( $this->service['key'] )
-                         ? Config::get('googlemaps.key')
-                         : $this->service['key'];
+        // is service key set, use it, otherwise use default key
+        $this->key = empty( $this->service['key'] ) ? Config::get('googlemaps.key') : $this->service['key'];
 
-            // set service url
-            $this->requestUrl = $this->service['url'];
+        // set service url
+        $this->requestUrl = $this->service['url'];
 
-            // is ssl_verify_peer key set, use it, otherwise use default key
-            $this->verifySSL = empty(Config::get('googlemaps.ssl_verify_peer'))
-                            ? FALSE
-                            : Config::get('googlemaps.ssl_verify_peer');
+        // is ssl_verify_peer key set, use it, otherwise use default key
+        $this->verifySSL = empty(Config::get('googlemaps.ssl_verify_peer'))
+                        ? false
+                        : Config::get('googlemaps.ssl_verify_peer');
 
-            $this->clearParameters();
+        $this->clearParameters();
     }
 
     /**
@@ -247,30 +251,30 @@ class WebService{
      * @param $service
      * @throws \ErrorException
      */
-    protected function validateConfig( $service ){
+    protected function validateConfig($service)
+    {
+        // Check for config file
+        if (! Config::has('googlemaps')) {
+            throw new ErrorException('Unable to find config file.');
+        }
 
-            // Check for config file
-            if( ! Config::has('googlemaps')){
-                throw new ErrorException('Unable to find config file.');
-            }
+        // Validate Key parameter
+        if(Config::has('googlemaps.key') === false) {
+            throw new ErrorException('Unable to find Key parameter in configuration file.');
+        }
 
-            // Validate Key parameter
-            if(Config::has('googlemaps.key') === false){
-                throw new ErrorException('Unable to find Key parameter in configuration file.');
-            }
+        // Validate Key parameter
+        if (Config::has('googlemaps.service') === false || Config::has('googlemaps.service.'.$service) === false) {
+            throw new ErrorException('Web service must be declared in the configuration file.');
+        }
 
-            // Validate Key parameter
-            if(Config::has('googlemaps.service') === false || Config::has('googlemaps.service.'.$service) === false){
-                throw new ErrorException('Web service must be declared in the configuration file.');
-            }
+        // Validate Endpoint
+        $endpointCount = count(Config::get('googlemaps.endpoint', []));
+        $endpointsKeyExists = Config::has('googlemaps.endpoint');
 
-            // Validate Endpoint
-            $endpointCount = count(Config::get('googlemaps.endpoint', []));
-            $endpointsKeyExists = Config::has('googlemaps.endpoint');
-
-            if($endpointsKeyExists === false || $endpointCount < 1){
-                throw new ErrorException('End point must not be empty.');
-            }
+        if ($endpointsKeyExists === false || $endpointCount < 1) {
+            throw new ErrorException('Endpoint must not be empty.');
+        }
     }
 
     /**
@@ -278,28 +282,29 @@ class WebService{
      * @return string
      * @throws \ErrorException
      */
-    protected function getResponse(){
-
+    protected function getResponse()
+    {
         $post = false;
 
         // use output parameter if required by the service
-        $this->requestUrl.= $this->service['endpoint']
-                            ? $this->endpoint
-                            : '';
+        $this->requestUrl .= $this->service['endpoint'] ? $this->endpoint : '';
 
         // set API Key
-        $this->requestUrl.= 'key='.urlencode( $this->key );
+        if (is_null($this->version)) {
+            $this->requestUrl .= 'key=' . urlencode($this->key);
+        }
 
-        switch( $this->service['type'] ){
+        switch($this->service['type'])
+        {
             case 'POST':
-                $post = json_encode( $this->service['param'] );
+                $post = json_encode($this->service['param']);
                 break;
             default:
-                $this->requestUrl.='&'. Parameters::getQueryString( $this->service['param'] );
+                $this->requestUrl .= '&'. Parameters::getQueryString($this->service['param']);
                 break;
         }
 
-        return $this->make( $post );
+        return $this->make($post);
     }
 
     /**
@@ -308,14 +313,15 @@ class WebService{
      * @return object
      * @throws \ErrorException
      */
-    protected function make( $isPost = false ){
+    protected function make($isPost = false, $httpHeaders = [])
+    {
+        $headers = array_merge($httpHeaders, $this->headers);
+        $ch = curl_init($this->requestUrl);
 
-        $ch = curl_init( $this->requestUrl );
-
-        if( $isPost ){
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-            curl_setopt($ch,CURLOPT_POST, 1);
-            curl_setopt($ch,CURLOPT_POSTFIELDS, $isPost );
+        if ($isPost) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $isPost);
         }
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verifySSL);
@@ -324,11 +330,12 @@ class WebService{
 
         $output = curl_exec($ch);
 
-        if( $output === false ){
-            throw new ErrorException( curl_error($ch) );
+        if($output === false) {
+            throw new ErrorException(curl_error($ch));
         }
 
         curl_close($ch);
+        
         return $output;
     }
 
@@ -341,5 +348,17 @@ class WebService{
     {
         $this->key = $key;
         return $this;
+    }
+
+    public function setHeaders($headers)
+    {
+        $this->headers = array_merge($this->headers, $headers);
+        return $this;
+    }
+
+    public function setVersion($version)
+    {
+        $this->version = $version;
+        return $this;   
     }
 }
