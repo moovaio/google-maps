@@ -313,13 +313,12 @@ class WebService{
      * @return object
      * @throws \ErrorException
      */
-    protected function make($isPost = false, $httpHeaders = [])
+    protected function make($isPost)
     {
-        $headers = array_merge($httpHeaders, $this->headers);
         $ch = curl_init($this->requestUrl);
 
         if ($isPost) {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $isPost);
         }
