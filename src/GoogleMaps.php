@@ -23,8 +23,10 @@ class GoogleMaps extends WebService
      * @return \GoogleMaps\WebService
      * @throws \ErrorException
      */
-    public function load($service)
+    public function load($service, $version = null)
     {
+        $this->version = $version;
+
         // Is overwrite class specified
         $class = array_key_exists($service, $this->webServices) ? new $this->webServices[$service] : $this;
         $class->build($service);

@@ -350,9 +350,21 @@ return [
                                                     ]
         ],
 
-
-
-
+        'new_placeautocomplete' => [
+            'url'                   => 'https://places.googleapis.com/v1/places:autocomplete',
+            'type'                  => 'POST',
+            'key'                   =>  null,
+            'endpoint'              =>  true,
+            'responseDefaultKey'    => 'placePrediction',
+            'param'                 => [
+                                        'input'                 => null,
+                                        'inputOffset'           => null,
+                                        'locationBias'          => null,
+                                        'languageCode'          => null,
+                                        'includedPrimaryTypes'  => null,
+                                        'includedRegionCodes'   => null,
+                                        ]
+        ],
 
         'placeautocomplete' => [
                         'url'                   => 'https://maps.googleapis.com/maps/api/place/autocomplete/',
